@@ -326,7 +326,13 @@
 	color: #FFFFFF;
 	border: none;
 	outline: none;
-	cursor: pointer
+	cursor: pointer;
+	transition: all 0.25s ease 0s;
+}
+
+.promo__interactive .add button:hover {
+	background-color: #e2bd04;
+	border-radius: 5px;
 }
 
 .promo__interactive .add button:active {
