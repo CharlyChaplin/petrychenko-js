@@ -77,14 +77,20 @@ window.addEventListener("DOMContentLoaded", function () {
 
 
 	//Modal
-	const modalWindow = document.querySelector(".modal");
-	const modalDialog = document.querySelector(".modal__dialog");
-	const modalWindowCloseButton = modalWindow.querySelector(".modal__close");
-	const modalButtons = document.querySelectorAll('[data-modal]');
+	const modalWindow = document.querySelector(".modal"),
+		modalDialog = document.querySelector(".modal__dialog"),
+		modalWindowCloseButton = modalWindow.querySelector(".modal__close"),
+		modalButtons = document.querySelectorAll('[data-modal]');
+	let _flgModalOpened = false;
+	let openInTime = undefined;
 
+	window.addEventListener("scroll", openModalWhenScrollInBottomPage);
 	modalButtons.forEach(mb => mb.addEventListener("click", openModal));
 
+	openInTime !== undefined && openModalByTime(openInTime);
+
 	function openModal() {
+		_flgModalOpened = true;
 		document.body.style.paddingRight = window.innerWidth - document.body.offsetWidth + 'px';
 		document.body.style.overflowY = "hidden";
 		modalWindow.style.display = "block";
@@ -100,6 +106,13 @@ window.addEventListener("DOMContentLoaded", function () {
 			Number(modalWindow.style.opacity) === 1 && clearInterval(openTimer);
 		}, 0);
 	}
+
+	function openModalByTime(time) {
+		const m = setTimeout(() => {
+			!_flgModalOpened && openModal();
+			clearTimeout(m);
+		}, time);
+	};
 
 	function closeModalWindow() {
 		removeEventListener("click", openModal);
@@ -117,6 +130,16 @@ window.addEventListener("DOMContentLoaded", function () {
 				document.body.style.paddingRight = 0;
 			}
 		}, 0);
+	}
+
+	function openModalWhenScrollInBottomPage() {
+		let yOffset = window.pageYOffset,
+			clientHeight = document.documentElement.clientHeight,
+			scrollHeight = document.documentElement.scrollHeight;
+		if (yOffset + clientHeight === scrollHeight) {
+			openModal();
+			removeEventListener("scroll", openModalWhenScrollInBottomPage);
+		}
 	}
 
 	function handleKey(e) { e.key === "Escape" && closeModalWindow() }
