@@ -1,4 +1,5 @@
 window.addEventListener("DOMContentLoaded", function () {
+	//Tabs
 	const tabContainer = document.querySelector(".tabcontainer");
 	const tabItems = tabContainer.querySelectorAll(".tabheader__item");
 	const tabContents = tabContainer.querySelectorAll(".tabcontent");
@@ -39,10 +40,8 @@ window.addEventListener("DOMContentLoaded", function () {
 		});
 	};
 
-
-
-
-	const promoEndTime = new Date('2023-02-14T22:12:50');
+	//Timer
+	const promoEndTime = new Date('2023-03-01T22:12:50');
 
 	function initTimer(endTime) {
 		let diff = endTime - new Date();
@@ -75,6 +74,57 @@ window.addEventListener("DOMContentLoaded", function () {
 	function getFormatDate(n) { return n < 10 ? "0" + n : n; }
 
 	initTimer(promoEndTime);
+
+
+	//Modal
+	const modalWindow = document.querySelector(".modal");
+	const modalDialog = document.querySelector(".modal__dialog");
+	const modalWindowCloseButton = modalWindow.querySelector(".modal__close");
+	const modalButtons = document.querySelectorAll('[data-modal]');
+
+	modalButtons.forEach(mb => mb.addEventListener("click", openModal));
+
+	function openModal() {
+		document.body.style.paddingRight = window.innerWidth - document.body.offsetWidth + 'px';
+		document.body.style.overflowY = "hidden";
+		modalWindow.style.display = "block";
+		modalDialog.style.display = "block";
+		modalWindowCloseButton.addEventListener("click", closeModalWindow);
+		modalWindow.addEventListener("click", handleDocClick);
+		document.addEventListener("keydown", handleKey);
+		let opacity = 0;
+		const openTimer = setInterval(() => {
+			opacity += 0.02;
+			modalWindow.style.opacity = opacity;
+			modalDialog.style.opacity = opacity;
+			Number(modalWindow.style.opacity) === 1 && clearInterval(openTimer);
+		}, 0);
+	}
+
+	function closeModalWindow() {
+		removeEventListener("click", openModal);
+		removeEventListener("keydown", handleKey);
+		let opacity = 1;
+		const closeTimer = setInterval(() => {
+			opacity -= 0.02;
+			modalWindow.style.opacity = opacity;
+			modalDialog.style.opacity = opacity;
+			if (Number(modalWindow.style.opacity) < 0) {
+				clearInterval(closeTimer);
+				modalWindow.style.display = "none";
+				modalDialog.style.opacity = 0;
+				document.body.style.overflowY = "auto";
+				document.body.style.paddingRight = 0;
+			}
+		}, 0);
+	}
+
+	function handleKey(e) { e.key === "Escape" && closeModalWindow() }
+
+	function handleDocClick(e) { e.target.classList.contains("modal") && closeModalWindow() }
+
+
+
 
 
 });
