@@ -143,10 +143,58 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function handleKey(e) { e.key === "Escape" && closeModalWindow() }
-
 	function handleDocClick(e) { e.target.classList.contains("modal") && closeModalWindow() }
 
 
+	
+	//Food menu
+	class FoodMenu {
+		constructor([img, alt], caption, desc, price, destSelector) {
+			this.img = img;
+			this.alt = alt;
+			this.caption = caption;
+			this.desc = desc;
+			this.price = price;
+			this.destSelector = destSelector;
+		}
+
+		render() {
+			const container = document.querySelector(this.destSelector);
+			const menuItem = document.createElement("div");
+			menuItem.classList.add("menu__item");
+			menuItem.innerHTML = `
+				<img src="${this.img}" alt="${this.alt}">
+				<h3 class="menu__item-subtitle">${this.caption}</h3>
+				<div class="menu__item-descr">${this.desc}</div>
+				<div class="menu__item-divider"></div>
+				<div class="menu__item-price">
+					<div class="menu__item-cost">Цена:</div>
+					<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+				</div>
+			`;
+			container.appendChild(menuItem);
+		}
+	}
+
+	new FoodMenu(
+		["img/tabs/vegy.jpg", "vegy"],
+		'Меню “Фитнес”',
+		'Меню “Фитнес” - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+		229,
+		'.menu__field .container').render();
+	new FoodMenu(
+		["img/tabs/elite.jpg", "elite"],
+		'Меню “Премиум”',
+		'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+		550,
+		'.menu__field .container').render();
+	new FoodMenu(
+		["img/tabs/post.jpg", "post"],
+		'Меню “Постное”',
+		'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+		430,
+		'.menu__field .container').render();
+	
 
 
 
