@@ -149,19 +149,19 @@ window.addEventListener("DOMContentLoaded", function () {
 	
 	//Food menu
 	class FoodMenu {
-		constructor([img, alt], caption, desc, price, destSelector) {
+		constructor([img, alt], caption, desc, price, destSelector, ...classes) {
 			this.img = img;
 			this.alt = alt;
 			this.caption = caption;
 			this.desc = desc;
 			this.price = price;
-			this.destSelector = destSelector;
+			this.destSelector = document.querySelector(destSelector);
+			this.classes = classes.length ? classes : ['menu__item'];
 		}
 
 		render() {
-			const container = document.querySelector(this.destSelector);
 			const menuItem = document.createElement("div");
-			menuItem.classList.add("menu__item");
+			this.classes.forEach(isClass => menuItem.classList.add(isClass));
 			menuItem.innerHTML = `
 				<img src="${this.img}" alt="${this.alt}">
 				<h3 class="menu__item-subtitle">${this.caption}</h3>
@@ -172,7 +172,7 @@ window.addEventListener("DOMContentLoaded", function () {
 					<div class="menu__item-total"><span>${this.price}</span> грн/день</div>
 				</div>
 			`;
-			container.appendChild(menuItem);
+			this.destSelector.appendChild(menuItem);
 		}
 	}
 
