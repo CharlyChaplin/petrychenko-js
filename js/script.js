@@ -79,7 +79,6 @@ window.addEventListener("DOMContentLoaded", function () {
 	//Modal
 	const modalWindow = document.querySelector(".modal"),
 		modalDialog = document.querySelector(".modal__dialog"),
-		modalWindowCloseButton = modalWindow.querySelector(".modal__close"),
 		modalButtons = document.querySelectorAll('[data-modal]');
 	let _flgModalOpened = false;
 	let openInTime = undefined;
@@ -95,7 +94,6 @@ window.addEventListener("DOMContentLoaded", function () {
 		document.body.style.overflowY = "hidden";
 		modalWindow.style.display = "block";
 		modalDialog.style.display = "block";
-		modalWindowCloseButton.addEventListener("click", closeModalWindow);
 		modalWindow.addEventListener("click", handleDocClick);
 		document.addEventListener("keydown", handleKey);
 		let opacity = 0;
@@ -143,10 +141,14 @@ window.addEventListener("DOMContentLoaded", function () {
 	}
 
 	function handleKey(e) { e.key === "Escape" && closeModalWindow() }
-	function handleDocClick(e) { e.target.classList.contains("modal") && closeModalWindow() }
+	function handleDocClick(e) {
+		if (e.target.classList.contains("modal") || e.target.classList.contains("modal__close")) {
+			closeModalWindow(e);
+		}
+	}
 
 
-	
+
 	//Food menu
 	class FoodMenu {
 		constructor([img, alt], caption, desc, price, destSelector, ...classes) {
@@ -194,9 +196,81 @@ window.addEventListener("DOMContentLoaded", function () {
 		'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
 		430,
 		'.menu__field .container').render();
-	
+
+
+
+	//Forms
+	const forms = document.querySelectorAll("form");
+
+	const message = {
+		loading: "Loading...",
+		success: "Thanks! We'll soon call you!",
+		failure: "Something went wrong..."
+	};
+
+	forms.forEach(form => postData(form));
+
+	function postData(form) {
+		form.addEventListener('submit', function (e) {
+			sendForm(e, form, this);
+		});
+	}
+
+	function sendForm(e, form, parent) {
+		e.preventDefault();
+
+		const statusMessage = document.createElement("div");
+		statusMessage.classList.add("status");
+		statusMessage.textContent = message.loading;
+		const img = document.createElement("img");
+		img.src = "../img/form/spinner.svg";
+		img.alt = message.loading;
+		const frm = document.querySelector(".modal__content form");
+		frm.querySelector('button').insertAdjacentElement('afterbegin', img);
+
+
+		const request = new XMLHttpRequest();
+		request.open("POST", 'server.php');
+
+		request.setRequestHeader("Content-type", "application/json");
+		const formData = new FormData(form);
+
+		const obj = {};
+
+		formData.forEach((val, key) => obj[key] = val);
+		request.send(JSON.stringify(obj));
+
+		request.addEventListener('load', () => {
+			frm.querySelector('button img').remove();
+			const tmp = frm.parentElement.innerHTML;
+
+			if (request.status === 200) {
+				console.log(request.response);
+				frm.innerHTML = `
+					<div class="modal__close">&times;</div>
+					<div class="modal__title">${message.success}</div>
+				`;
+				form.reset();
+				setTimeout(() => {
+					closeModalWindow();
+					frm.parentElement.innerHTML = tmp;
+				}, 2000);
+			} else {
+				console.log(request.response);
+				frm.innerHTML = `
+					<div class="modal__close">&times;</div>
+					<div class="modal__title">${message.failure}</div>
+				`;
+				setTimeout(() => {
+					closeModalWindow();
+					frm.parentElement.innerHTML = tmp;
+				}, 2000);
+			}
+		});
+
+		parent.removeEventListener("submit", sendForm);
+	}
 
 
 
 });
-

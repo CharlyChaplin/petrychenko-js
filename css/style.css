@@ -720,5 +720,13 @@ a {
 .modal .btn {
 	display: block;
 	width: 280px;
-	margin: 0 auto
+	margin: 0 auto;
+	position: relative;
+}
+
+.modal .btn img {
+	position: absolute;
+	left: 0;
+	top: 50%;
+	transform: translate(50%, -50%)
 }
