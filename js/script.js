@@ -178,27 +178,21 @@ window.addEventListener("DOMContentLoaded", function () {
 		}
 	}
 
-	new FoodMenu(
-		["img/tabs/vegy.jpg", "vegy"],
-		'Меню “Фитнес”',
-		'Меню “Фитнес” - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-		229,
-		'.menu__field .container').render();
-	new FoodMenu(
-		["img/tabs/elite.jpg", "elite"],
-		'Меню “Премиум”',
-		'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-		550,
-		'.menu__field .container').render();
-	new FoodMenu(
-		["img/tabs/post.jpg", "post"],
-		'Меню “Постное”',
-		'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-		430,
-		'.menu__field .container').render();
+	async function getResource(url) {
+		const req = await fetch(url);
+		if (req.ok) {
+			return await req.json();
+		} else {
+			throw new Error(`${req.status} + " " + ${req.statusText} + "(" + ${req.url} + ")"`);
+		}
+	};
 
+	getResource('http://localhost:3000/menu')
+		.then(data => data.forEach(({ img, altimg, title, descr, price }) => {
+			new FoodMenu([img, altimg], title, descr, price, '.menu__field .container').render()
+		}));
 
-
+		
 	//Forms
 	const forms = document.querySelectorAll("form");
 
@@ -208,15 +202,29 @@ window.addEventListener("DOMContentLoaded", function () {
 		failure: "Something went wrong..."
 	};
 
-	forms.forEach(form => postData(form));
+	forms.forEach(form => bindPostData(form));
 
-	function postData(form) {
+
+	async function postData(url, data) {
+		const req = await fetch(url, {
+			method: "POST",
+			headers: { "Content-type": "application/json; charset=utf-8" },
+			body: data
+		});
+		if (req.ok) {
+			return await req.json();
+		} else {
+			return new Error(`${req.status} + " " + ${req.statusText} + "(" + ${req.url} + ")"`);
+		}
+	};
+
+	function bindPostData(form) {
 		form.addEventListener('submit', function (e) {
-			sendForm(e, form, this);
+			sendData(e, form, this);
 		});
 	}
 
-	function sendForm(e, form, parent) {
+	function sendData(e, form, parent) {
 		e.preventDefault();
 
 		const statusMessage = document.createElement("div");
@@ -230,17 +238,10 @@ window.addEventListener("DOMContentLoaded", function () {
 		frm.querySelector('button').insertAdjacentElement('afterbegin', img);
 
 		const formData = new FormData(form);
-		const obj = {};
-		formData.forEach((key, val) => obj[key] = val);
+		const obj = JSON.stringify(Object.fromEntries(formData.entries()));
 
-		fetch('server.php', {
-			method: "POST",
-			headers: { "Content-type": "application/json; charset=utf-8" },
-			body: JSON.stringify(obj)
-		})
-			.then(resp => {
-				resp.text();
-			})
+
+		postData('http://localhost:3000/requests', obj)
 			.then(() => {
 				frm.querySelector('button img').remove();
 				frm.innerHTML = `
@@ -248,7 +249,8 @@ window.addEventListener("DOMContentLoaded", function () {
 				<div class="modal__title">${message.success}</div>
 			`;
 			})
-			.catch(() => {
+			.catch((data) => {
+				console.log(data);
 				frm.innerHTML = `
 				<div class="modal__close">&times;</div>
 				<div class="modal__title">${message.failure}</div>
@@ -262,9 +264,11 @@ window.addEventListener("DOMContentLoaded", function () {
 				}, 2000);
 			});
 
-		parent.removeEventListener("submit", sendForm);
+		parent.removeEventListener("submit", sendData);
 
 	}
+
+
 
 });
 
