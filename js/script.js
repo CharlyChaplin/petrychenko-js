@@ -226,51 +226,45 @@ window.addEventListener("DOMContentLoaded", function () {
 		img.src = "../img/form/spinner.svg";
 		img.alt = message.loading;
 		const frm = document.querySelector(".modal__content form");
+		const tmp = frm.parentElement.innerHTML;
 		frm.querySelector('button').insertAdjacentElement('afterbegin', img);
 
-
-		const request = new XMLHttpRequest();
-		request.open("POST", 'server.php');
-
-		request.setRequestHeader("Content-type", "application/json");
 		const formData = new FormData(form);
-
 		const obj = {};
+		formData.forEach((key, val) => obj[key] = val);
 
-		formData.forEach((val, key) => obj[key] = val);
-		request.send(JSON.stringify(obj));
-
-		request.addEventListener('load', () => {
-			frm.querySelector('button img').remove();
-			const tmp = frm.parentElement.innerHTML;
-
-			if (request.status === 200) {
-				console.log(request.response);
+		fetch('server.php', {
+			method: "POST",
+			headers: { "Content-type": "application/json; charset=utf-8" },
+			body: JSON.stringify(obj)
+		})
+			.then(resp => {
+				resp.text();
+			})
+			.then(() => {
+				frm.querySelector('button img').remove();
 				frm.innerHTML = `
-					<div class="modal__close">&times;</div>
-					<div class="modal__title">${message.success}</div>
-				`;
+				<div class="modal__close">&times;</div>
+				<div class="modal__title">${message.success}</div>
+			`;
+			})
+			.catch(() => {
+				frm.innerHTML = `
+				<div class="modal__close">&times;</div>
+				<div class="modal__title">${message.failure}</div>
+			`;
+			})
+			.finally(() => {
 				form.reset();
 				setTimeout(() => {
 					closeModalWindow();
 					frm.parentElement.innerHTML = tmp;
 				}, 2000);
-			} else {
-				console.log(request.response);
-				frm.innerHTML = `
-					<div class="modal__close">&times;</div>
-					<div class="modal__title">${message.failure}</div>
-				`;
-				setTimeout(() => {
-					closeModalWindow();
-					frm.parentElement.innerHTML = tmp;
-				}, 2000);
-			}
-		});
+			});
 
 		parent.removeEventListener("submit", sendForm);
+
 	}
 
-
-
 });
+

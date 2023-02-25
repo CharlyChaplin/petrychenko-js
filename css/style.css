@@ -726,6 +726,9 @@ a {
 
 .modal .btn img {
 	position: absolute;
+	width: 26px;
+	height: 26px;
+	z-index: 555;
 	left: 0;
 	top: 50%;
 	transform: translate(50%, -50%)
