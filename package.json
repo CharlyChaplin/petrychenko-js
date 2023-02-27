@@ -15,8 +15,5 @@
 	"bugs": {
 		"url": "https://github.com/CharlyChaplin/petrychenko-js/issues"
 	},
-	"homepage": "https://github.com/CharlyChaplin/petrychenko-js#readme",
-	"devDependencies": {
-		"json-server": "^0.17.2"
-	}
+	"homepage": "https://github.com/CharlyChaplin/petrychenko-js#readme"
 }

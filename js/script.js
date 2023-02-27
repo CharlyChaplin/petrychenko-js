@@ -296,11 +296,70 @@ window.addEventListener("DOMContentLoaded", function () {
 			this.sliderWrapper.style.overflow = "hidden";
 			this.sliderFrames.forEach(slide => slide.style.width = this.width);
 
+			this._addBullets();
+
 			this.currentSlideShow.textContent = this._Format(this.currentSlide + 1);
 			this.totalSlideShow.textContent = this._Format(this.totalSlides);
 			this.prevBtn.addEventListener('click', this._prevMove);
 			this.nextBtn.addEventListener('click', this._nextMove);
 
+			this._sliderRender();
+		}
+
+		_addBullets() {
+			this.sliderWrapper.style.position = "relative";
+
+			const bulletsContainer = document.createElement('div');
+			bulletsContainer.classList.add("carousel-indicators");
+			bulletsContainer.style.cssText = `
+				position: absolute;
+				right: 0;
+				bottom: 0;
+				left: 0;
+				z-index: 15;
+				display: flex;
+				justify-content: center;
+				margin-right: 15%;
+				margin-left: 15%;
+				list-style: none;
+			`;
+			for (let i = 0; i < this.totalSlides; i++) {
+				const dotElem = document.createElement('div');
+				dotElem.classList.add('dot');
+				dotElem.dataset.posIndex = i;
+				dotElem.style.cssText = `
+					box-sizing: content-box;
+					flex: 0 1 auto;
+					width: 30px;
+					height: 6px;
+					margin-right: 3px;
+					margin-left: 3px;
+					cursor: pointer;
+					background-color: #fff;
+					background-clip: padding-box;
+					border-top: 10px solid transparent;
+					border-bottom: 10px solid transparent;
+					opacity: .5;
+					transition: opacity .6s ease;
+				`;
+				i === 0 ? dotElem.style.opacity = 1 : null;
+				dotElem.addEventListener('click', this._dotsRender);
+				bulletsContainer.appendChild(dotElem);
+			}
+
+			this.sliderWrapper.insertAdjacentElement('beforeend', bulletsContainer);
+		}
+
+		_dotsRender = e => {
+			const dots = this.slider.querySelectorAll('.carousel-indicators .dot');
+			dots.forEach(dot => dot.style.opacity = .5);
+
+			if (e) this.currentSlide = +e.target.dataset.posIndex;
+
+			dots[this.currentSlide].style.opacity = 1;
+
+			this.offset = this.width * this.currentSlide;
+			this.slidesField.style.transform = `translateX(-${this.offset}px)`;
 			this._sliderRender();
 		}
 
@@ -317,6 +376,7 @@ window.addEventListener("DOMContentLoaded", function () {
 
 			this.slidesField.style.transform = `translateX(-${this.offset}px)`;
 
+			this._dotsRender();
 			this._sliderRender();
 		}
 
@@ -330,6 +390,7 @@ window.addEventListener("DOMContentLoaded", function () {
 			}
 			this.slidesField.style.transform = `translateX(-${this.offset}px)`;
 
+			this._dotsRender();
 			this._sliderRender();
 		}
 
