@@ -408,7 +408,7 @@ a {
 
 .calculating__choose-item_active {
 	color: #fff;
-	background-color: #54ed39
+	background-color: #4acf33
 }
 
 .calculating__choose_medium {
@@ -435,20 +435,40 @@ a {
 }
 
 .calculating__total {
-	width: 490px;
+	width: 700px;
 	margin: 0 auto;
 	display: flex;
 	justify-content: space-between;
-	align-items: center
+	align-items: baseline
+}
+
+.calculating__subtitle {
+	margin-right: 30px;
 }
 
 .calculating__result {
 	font-size: 18px;
-	font-weight: 700
+	font-weight: 700;
+	display: flex;
+	align-items: baseline;
+	/*flex: 1 1 auto*/
 }
 
 .calculating__result span {
-	font-size: 42px
+	font-size: 42px;
+	margin-right: 10px;
+}
+
+.calculating__clear {
+	width: fit-content;
+	color: rgba(0, 0, 0, .25);
+	transition: all 0.25s ease 0s;
+}
+
+.calculating__clear:hover {
+	color: rgba(0, 0, 0, .5);
+	cursor: pointer;
+	text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.10);
 }
 
 .menu {
