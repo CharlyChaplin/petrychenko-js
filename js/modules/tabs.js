@@ -1,42 +1,44 @@
-export default function tabs() {
-	//Tabs
-	const tabContainer = document.querySelector(".tabcontainer");
-	const tabItems = tabContainer.querySelectorAll(".tabheader__item");
-	const tabContents = tabContainer.querySelectorAll(".tabcontent");
-	const tabHeader = tabContainer.querySelector(".tabheader__items");
+export default class Tabs {
+	constructor(container) {
+		this.container = document.querySelector(container);
+		this.tabItems = this.container.querySelectorAll('.tabheader__item');
+		this.tabContents = this.container.querySelectorAll('.tabcontent');
+		this.tabHeader = this.container.querySelector('.tabheader__items');
+		
+		this._initTabs();
+	}
 
-	(function initTabs() {
-		if (tabItems.length !== tabContents.length) {
+	_initTabs =() => {
+		if (this.tabItems.length !== this.tabContents.length) {
 			console.log("Tabs not ready");
 		} else {
-			renderTabContent();
-			tabHeader.addEventListener("click", tabClick);
+			this._renderTabContent();
+			this.tabHeader.addEventListener("click", this._tabClick);
 		}
-	})();
-
-	function tabClick(e) {
+	};
+	_tabClick = e => {
 		if (e.target && e.target.classList.contains("tabheader__item")) {
-			tabItems.forEach((tab, i) => {
-				if (tab === e.target) tabChoiced(i);
+			this.tabItems.forEach((tab, i) => {
+				if (tab === e.target) this._tabChoiced(i);
 			});
 		}
 	};
-	function tabChoiced(index) {
-		tabItems.forEach((tabItem, i) => {
+	_tabChoiced = index => {
+		this.tabItems.forEach((tabItem, i) => {
 			i === index
 				? tabItem.classList.add("tabheader__item_active")
 				: tabItem.classList.remove("tabheader__item_active");
 		});
-		renderTabContent(index);
+		this._renderTabContent(index);
 	};
-	function renderTabContent() {
-		tabItems.forEach((tabItem, index) => {
+	_renderTabContent = () => {
+		this.tabItems.forEach((tabItem, index) => {
 			if (tabItem.classList.contains("tabheader__item_active")) {
-				tabContents[index].style.removeProperty("display");
-				!tabContents[index].style.length && tabContents[index].removeAttribute("style");
+				this.tabContents[index].style.removeProperty("display");
+				!this.tabContents[index].style.length && this.tabContents[index].removeAttribute("style");
 			} else {
-				tabContents[index].style.display = "none";
+				this.tabContents[index].style.display = "none";
 			}
 		});
-	};
+	}
 }

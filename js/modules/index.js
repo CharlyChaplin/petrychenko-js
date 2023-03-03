@@ -1,18 +1,18 @@
-import tabs from "./tabs";
-import promoTimer from "./timer";
-import modalWindow from './modal';
+import Tabs from "./tabs";
+import PromoTimer from "./timer";
 import food from './foodMenu';
 import formRender from './forms';
-import sliderRender from './slider';
+import Slider from './slider';
 import calcRender from './calc';
+import { Modal } from './modal';
 
 
 export {
-	tabs,
-	promoTimer,
-	modalWindow,
+	Tabs,
+	PromoTimer,
 	food,
 	formRender,
-	sliderRender,
+	Slider,
 	calcRender,
+	Modal,
 }

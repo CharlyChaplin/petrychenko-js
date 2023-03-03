@@ -1,4 +1,4 @@
-import { getResource } from "../services";
+import { fetchData } from "../services";
 
 export default function food() {
 	//Food menu
@@ -30,7 +30,7 @@ export default function food() {
 		}
 	}
 
-	getResource('http://localhost:3000/menu')
+	fetchData('menu')
 		.then(data => data.forEach(({ img, altimg, title, descr, price }) => {
 			new FoodMenu([img, altimg], title, descr, price, '.menu__field .container').render()
 		}));

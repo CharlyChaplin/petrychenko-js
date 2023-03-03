@@ -1,6 +1,8 @@
-export default function formRender() {
-	//Forms
-	const forms = document.querySelectorAll("form");
+import { fetchData } from "../services";
+import { Modal } from "./modal";
+
+export default function formRender(formSelector) {
+	const forms = document.querySelectorAll(formSelector);
 
 	const message = {
 		loading: "Loading...",
@@ -11,19 +13,6 @@ export default function formRender() {
 	forms.forEach(form => bindPostData(form));
 
 
-	async function postData(url, data) {
-		const req = await fetch(url, {
-			method: "POST",
-			headers: { "Content-type": "application/json; charset=utf-8" },
-			body: data
-		});
-		if (req.ok) {
-			return await req.json();
-		} else {
-			return new Error(`${req.status} + " " + ${req.statusText} + "(" + ${req.url} + ")"`);
-		}
-	};
-
 	function bindPostData(form) {
 		form.addEventListener('submit', function (e) {
 			e.preventDefault();
@@ -32,7 +21,6 @@ export default function formRender() {
 	};
 
 	function sendData(e, form, parent) {
-		e.preventDefault();
 
 		const statusMessage = document.createElement("div");
 		statusMessage.classList.add("status");
@@ -49,8 +37,7 @@ export default function formRender() {
 		const formData = new FormData(form);
 		const obj = JSON.stringify(Object.fromEntries(formData.entries()));
 
-
-		postData('http://localhost:3000/requests', obj)
+		fetchData('requests', "post", obj)
 			.then(() => {
 				frm.querySelector('button img').remove();
 				frm.innerHTML = `
@@ -68,8 +55,11 @@ export default function formRender() {
 			.finally(() => {
 				form.reset();
 				setTimeout(() => {
-					closeModalWindow();
-					frm.parentElement.innerHTML = tmp;
+					new Modal('.modal', 'data-modal')._closeModalWindow();
+					setTimeout(() => {
+						frm.parentElement.innerHTML = tmp;
+					}, 200);
+
 				}, 2000);
 			});
 

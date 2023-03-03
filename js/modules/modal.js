@@ -1,72 +1,80 @@
-export default function modalWindow() {
-	//Modal
-	const modalWindow = document.querySelector(".modal"),
-		modalDialog = document.querySelector(".modal__dialog"),
-		modalButtons = document.querySelectorAll('[data-modal]');
-	let _flgModalOpened = false;
-	let openInTime = undefined;
+import { fetchData } from "../services";
 
-	window.addEventListener("scroll", openModalWhenScrollInBottomPage);
-	modalButtons.forEach(mb => mb.addEventListener("click", openModal));
+export class Modal {
+	constructor(container, dataName) {
+		this.container = document.querySelector(container);
+		this.modalDialog = this.container.querySelector(`${container}__dialog`);
+		this.modalButtons = document.querySelectorAll(`[${dataName}]`);
 
-	openInTime !== undefined && openModalByTime(openInTime);
+		this._flgModalOpened = false;
 
-	function openModal() {
-		_flgModalOpened = true;
+		this._initModal();
+	}
+
+	_initModal = () => {
+		window.addEventListener("scroll", this._openModalWhenScrollInBottomPage);
+		this.modalButtons.forEach(mb => mb.addEventListener("click", this._openModal));
+
+		this._initOpenInTime();
+	}
+	_initOpenInTime = () => {
+		fetchData('openInTime')
+			.then(data => data.forEach(({ timeopen }) => {
+				timeopen && this._openModalByTime(timeopen);
+			}));
+	}
+	_openModal = () => {
+		this._flgModalOpened = true;
 		document.body.style.paddingRight = window.innerWidth - document.body.offsetWidth + 'px';
 		document.body.style.overflowY = "hidden";
-		modalWindow.style.display = "block";
-		modalDialog.style.display = "block";
-		modalWindow.addEventListener("click", handleDocClick);
-		document.addEventListener("keydown", handleKey);
+		this.container.style.display = "block";
+		this.modalDialog.style.display = "block";
+		this.container.addEventListener("click", this._handleDocClick);
+		document.addEventListener("keydown", this._handleKey);
 		let opacity = 0;
 		const openTimer = setInterval(() => {
 			opacity += 0.02;
-			modalWindow.style.opacity = opacity;
-			modalDialog.style.opacity = opacity;
-			Number(modalWindow.style.opacity) === 1 && clearInterval(openTimer);
+			this.container.style.opacity = opacity;
+			this.modalDialog.style.opacity = opacity;
+			Number(this.container.style.opacity) === 1 && clearInterval(openTimer);
 		}, 0);
-	}
-
-	function openModalByTime(time) {
+	};
+	_openModalByTime = time => {
 		const m = setTimeout(() => {
-			!_flgModalOpened && openModal();
+			!this._flgModalOpened && this._openModal();
 			clearTimeout(m);
 		}, time);
 	};
-
-	function closeModalWindow() {
-		removeEventListener("click", openModal);
-		removeEventListener("keydown", handleKey);
+	_closeModalWindow = () => {
+		removeEventListener("click", this._openModal);
+		removeEventListener("keydown", this._handleKey);
 		let opacity = 1;
 		const closeTimer = setInterval(() => {
 			opacity -= 0.02;
-			modalWindow.style.opacity = opacity;
-			modalDialog.style.opacity = opacity;
-			if (Number(modalWindow.style.opacity) < 0) {
+			this.container.style.opacity = opacity;
+			this.modalDialog.style.opacity = opacity;
+			if (Number(this.container.style.opacity) < 0) {
 				clearInterval(closeTimer);
-				modalWindow.style.display = "none";
-				modalDialog.style.opacity = 0;
+				this.container.style.display = "none";
+				this.modalDialog.style.opacity = 0;
 				document.body.style.overflowY = "auto";
 				document.body.style.paddingRight = 0;
 			}
 		}, 0);
-	}
-
-	function openModalWhenScrollInBottomPage() {
+	};
+	_openModalWhenScrollInBottomPage = () => {
 		let yOffset = window.pageYOffset,
 			clientHeight = document.documentElement.clientHeight,
 			scrollHeight = document.documentElement.scrollHeight;
 		if (yOffset + clientHeight === scrollHeight) {
-			openModal();
-			removeEventListener("scroll", openModalWhenScrollInBottomPage);
+			this._openModal();
+			removeEventListener("scroll", this._openModalWhenScrollInBottomPage);
 		}
-	}
-
-	function handleKey(e) { e.key === "Escape" && closeModalWindow() }
-	function handleDocClick(e) {
-		if (e.target.classList.contains("modal") || e.target.classList.contains("modal__close")) {
-			closeModalWindow(e);
+	};
+	_handleKey = e => { e.key === "Escape" && this._closeModalWindow() };
+	_handleDocClick = e => {
+		if (e.target.classList.contains(this.container.className) || e.target.classList.contains(`${this.container.className}__close`)) {
+			this._closeModalWindow();
 		}
 	}
 }

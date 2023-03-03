@@ -1,39 +1,55 @@
-import { getResource } from '../services/';
+import { fetchData } from '../services/';
 
-export default function promoTimer() {
-	//Timer
-	getResource('http://localhost:3000/promotime')
-		.then(data => {
-			data.forEach(({ enddata }) => initTimer(new Date(enddata)))
-		});
+export default class PromoTimer {
+	constructor(container) {
+		this.container = document.querySelector(container);
+		this.days = this.container.querySelector('.days');
+		this.hours = this.container.querySelector('.hours');
+		this.minutes = this.container.querySelector('.minutes');
+		this.seconds = this.container.querySelector('.seconds');
+		this.finishPromo = this.container.querySelector('.promotion__text strong');
+		this._init();
+	};
 
-	function initTimer(endTime) {
+	_init() {
+		fetchData('promotime')
+			.then(data => {
+				data.forEach(({ enddata }) => this._initTimer(new Date(enddata)))
+			});
+	};
+
+	_initTimer(endTime) {
 		let diff = endTime - new Date();
-		let interval;
-		renderTime(diff < 0 ? 0 : diff);
-
+		this._renderTime(diff < 0 ? 0 : diff);
 
 		if (diff > 0) {
-			interval = setInterval(() => {
+			const interval = setInterval(() => {
 				diff = endTime - new Date();
-				renderTime(diff < 0 ? 0 : diff, interval);
+				this._renderTime(diff < 0 ? 0 : diff, interval);
 			}, 1000);
-		}
+		};
+
+		this._getFinishDate(endTime);
+	};
+
+	_getFinishDate = finishTime => {
+		const date = new Date(finishTime);
+		let options = {
+			month: "long",
+			day: "numeric",
+		};
+		const finishDate = new Intl.DateTimeFormat("ru-RU", options).format(date);
+		this.finishPromo.textContent = `${finishDate} в 00:00`;
 	}
 
-	function renderTime(diff = 0, interval) {
-		const days = document.getElementById('days');
-		const hours = document.getElementById('hours');
-		const minutes = document.getElementById('minutes');
-		const seconds = document.getElementById('seconds');
-
-		days.textContent = diff > 0 ? getFormatDate(Math.floor(new Date(diff) / (1000 * 60 * 60 * 24))) : "00";
-		hours.textContent = diff > 0 ? getFormatDate(Math.floor(new Date(diff) / (1000 * 60 * 60) % 60)) : "00";
-		minutes.textContent = diff > 0 ? getFormatDate(Math.floor(new Date(diff) / (1000 * 60) % 60)) : "00";
-		seconds.textContent = diff > 0 ? getFormatDate(Math.floor(new Date(diff) / 1000 % 60)) : "00";
+	_renderTime(diff = 0, interval) {
+		this.days.textContent = diff > 0 ? this._getFormatDate(Math.floor(new Date(diff) / (1000 * 60 * 60 * 24))) : "00";
+		this.hours.textContent = diff > 0 ? this._getFormatDate(Math.floor(new Date(diff) / (1000 * 60 * 60) % 60)) : "00";
+		this.minutes.textContent = diff > 0 ? this._getFormatDate(Math.floor(new Date(diff) / (1000 * 60) % 60)) : "00";
+		this.seconds.textContent = diff > 0 ? this._getFormatDate(Math.floor(new Date(diff) / 1000 % 60)) : "00";
 		diff < 1000 && clearInterval(interval);
 		diff < 1000 && console.log("Акция закончена");
-	}
+	};
 
-	function getFormatDate(n) { return n < 10 ? "0" + n : n; }
+	_getFormatDate = n => n < 10 ? "0" + n : n;
 }

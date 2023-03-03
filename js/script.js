@@ -1,21 +1,20 @@
-import { calcRender, food, formRender, modalWindow, promoTimer, sliderRender, tabs } from "./modules";
+import {Modal, calcRender, food, formRender, PromoTimer, Slider, Tabs } from "./modules";
 
 
 window.addEventListener("DOMContentLoaded", function () {
-	
-	tabs();
-	
-	promoTimer();
-	
-	modalWindow();
+	new Modal('.modal', 'data-modal');
+
+	new Tabs('.tabcontainer');
+
+	new PromoTimer('.promotion');
 
 	food();
 
-	formRender();
+	formRender('form');
 
-	sliderRender();
+	new Slider("offer__slider");
 
 	calcRender();
-	
+
 });
 

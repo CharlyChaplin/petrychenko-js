@@ -1,4 +1,7 @@
-import getResource from "./fetchData";
+import fetchData from "./fetchData";
+import { port } from './port';
 
-
-export { getResource };
+export {
+	fetchData,
+	port,
+};
