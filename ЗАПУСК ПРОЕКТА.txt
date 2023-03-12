@@ -1,0 +1,5 @@
+1. Запустить MAMP-сервер php.
+
+2. Запустить в отдельном терминале json-server --watch db.json
+
+3. Запустить в Visual Studio Code npm run dev.
